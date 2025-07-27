@@ -18,7 +18,6 @@ def menu():
 
 def depositar(saldo,valor,extrato,/):
 
-      
      if valor > 0 :
           saldo += valor
           extrato += f"Depósito : \tR$ {valor:.2f}\n"
@@ -29,7 +28,6 @@ def depositar(saldo,valor,extrato,/):
      return saldo,extrato
      
 def sacar(*,saldo,valor,extrato,limite, numero_saque,Limites_saques):
-      
       
       excedeu_saldo =  valor > saldo
       excedeu_limite = valor > limite
@@ -58,7 +56,7 @@ def sacar(*,saldo,valor,extrato,limite, numero_saque,Limites_saques):
 def exibir_extrato(saldo, /,*, extrato):
       print("\n======== Extrato ========")
 
-      print("não foram realizados movimentos" if not consulta else consulta)
+      print("não foram realizados movimentos" if not extrato else extrato)
 
       print(f"\nSaldo:R${saldo:.2f}")
 
@@ -83,7 +81,7 @@ def filtrar_usuario(cpf,usuarios):
       usuarios_filtrados = [usuario for usuario in usuarios if usuario["cpf"]==cpf]
       return usuarios_filtrados[0] if usuarios_filtrados else None
 
-def criar_conta(Angecia,numero_conta,usuarios):
+def criar_conta(Agencia,numero_conta,usuarios):
       cpf =  cpf = input("Informe o cpf")
       usuario = filtrar_usuario(cpf,usuarios)
 
@@ -92,8 +90,17 @@ def criar_conta(Angecia,numero_conta,usuarios):
           return {"Agencia" : Agencia,"numero_conta": numero_conta, "usuario": usuario}
       
       print("\n@@@Falha na criação da conta")
-      
 
+def listar_contas(contas):
+     for conta in contas:
+           linha = f"""\
+               Agencia: \t{conta['agencia']}
+               C/C :\t\t{conta['numero_conta']}
+               Titular: \t{conta['usuario']['nome']}
+          """
+           print("=" * 100)
+           print(textwrap.dedent(linha))
+           
 def main():
      Limite_saques = 3
      Agencia = "0001"
@@ -149,10 +156,9 @@ def main():
            
            listar_contas(contas)
           
-     """ elif opcao == "q" :
-        break
+     elif opcao == "s" :
+        breakpoint
      else:
           print("Operação inválida, por favor selecione novamente a operação desejada")
-          """
-
+     
 main()
