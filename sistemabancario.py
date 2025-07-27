@@ -1,79 +1,158 @@
 import textwrap
-menu = """
 
-    [d] depósito
-    [l] levantamento
-    [c] consulta
-    [s] sair
+def menu():
 
-"""
+     menu = """\n
+     ____________________ MENU ____________________
 
-saldo = 0
+     [d]\tdepósito
+     [l]\tlevantamento
+     [c]\tconsulta
+     [nc]\tNova conta
+     [lc]\tListar conta
+     [nu]\tNovo usuario
+     [s]\tsair
 
-limite_de_levantamento = 500
+           =>"""
+     return input(textwrap.dedent(menu))
 
-consulta = ""
-
-numero_de_levantamento = 0
-
-limite_numero_de_levantamentos = 3
-
-while True:
-    
-    opcao = input(menu)
-
-    if opcao == "d" :
-        valor = float(input("Informe o montante a ser depositado"))
-        
-        if valor > 0 :
-
-            saldo += valor
-
-            consulta += f"Depósito : R$ {valor:.2f}\n"
-
-        else:
-            print("Valor inválido")  
-
-    elif opcao == "l" : 
-            valor = float(input("Informe o montante a ser retirado"))
-
-            valor_indisponivel = valor > saldo
-
-            antigiu_limite = valor > limite_de_levantamento
-
-            antigiu_limite_saques = numero_de_levantamento >= limite_numero_de_levantamentos
-
-            if valor_indisponivel :
-                 print("Saldo insuficiente")
-
-            elif  antigiu_limite :
-                 print("Limite de retirada antigido")
-
-            elif antigiu_limite_saques :
-                 print("Limite de antigido")
-            
-            elif valor > 0 :
-                 saldo -= valor
-
-                 consulta += f"Levantamento : R$ {valor:.2f}\n"
-
-                 numero_de_levantamento += 1
-            else:
-                 print("Saldo não é suficiente")
+def depositar(saldo,valor,extrato,/):
 
       
-    elif opcao == "c" :
-         print("\n======== Extrato ========")
+     if valor > 0 :
+          saldo += valor
+          extrato += f"Depósito : \tR$ {valor:.2f}\n"
+          print("Depósito efectuado com sucesso")
+     else:
+           print("\n@@@ operação falhou")
 
-         print("não foram realizados movimentos" if not consulta else consulta)
+     return saldo,extrato
+     
+def sacar(*,saldo,valor,extrato,limite, numero_saque,Limites_saques):
+      
+      
+      excedeu_saldo =  valor > saldo
+      excedeu_limite = valor > limite
+      excedeu_saques = numero_saque > Limites_saques
+      
+      if excedeu_saldo :
+             print("\n@@@ operação falhou, saldo insuficiente")
 
-         print(f"\nSaldo:R${saldo:.2f}")
+      elif excedeu_limite:
+             print("\n@@@ operação falhou, limite do valor de retirada atingido")
 
-         print("=========================================")
-    
-    elif opcao == "q" :
-         
-         break
-    else:
-         print("Operação inválida, por favor selecione novamente a operação desejada")
-         
+      elif excedeu_saques :
+             print("\n@@@ operação falhou, limite de saque atingido")
+            
+      elif valor > 0 :
+            saldo -= valor
+            extrato += f"Saque:\t\tR${valor:.2f}\n"
+            numero_saque += 1
+            print("\n@@@ Saque realizado com sucesso")
+            
+      else:
+          print("\n@@@ operação falhou,valor inválido")
+      
+      return saldo, extrato
+
+def exibir_extrato(saldo, /,*, extrato):
+      print("\n======== Extrato ========")
+
+      print("não foram realizados movimentos" if not consulta else consulta)
+
+      print(f"\nSaldo:R${saldo:.2f}")
+
+      print("=========================================")    
+
+def criar_usuario(usuarios):
+      cpf = input("Informe o cpf(somente número)")
+      usuario = filtrar_usuario(cpf,usuarios)
+
+      if usuario :
+          print("\n@@@ Já existe usuario com esse CPF")
+          return
+      
+      nome = input("Informe o seu nome completo")
+      data_nascimento = input("Informe o sua data de nascimento")
+      endereco =input("Informe o seu endereco")
+
+      usuarios.append({"nome":nome,"data_nascimento":data_nascimento,"endereco":endereco,"cpf":cpf})
+      print("Conta registrada com sucesso")
+
+def filtrar_usuario(cpf,usuarios):
+      usuarios_filtrados = [usuario for usuario in usuarios if usuario["cpf"]==cpf]
+      return usuarios_filtrados[0] if usuarios_filtrados else None
+
+def criar_conta(Angecia,numero_conta,usuarios):
+      cpf =  cpf = input("Informe o cpf")
+      usuario = filtrar_usuario(cpf,usuarios)
+
+      if usuario :
+          print("\n@@@ Conta criada com sucesso")
+          return {"Agencia" : Agencia,"numero_conta": numero_conta, "usuario": usuario}
+      
+      print("\n@@@Falha na criação da conta")
+      
+
+def main():
+     Limite_saques = 3
+     Agencia = "0001"
+
+     saldo = 0
+     limite= 500
+     extrato = ""
+     numero_saque = 0
+     usuarios = []
+     contas = []
+
+     while True:
+     
+          opcao = menu()
+
+
+     if opcao == "d" :
+          valor = float(input("Informe o montante a ser depositado"))
+
+          saldo, extrato = depositar(saldo,valor,extrato)
+
+     elif opcao == "l" : 
+               valor = float(input("Informe o montante a ser retirado:"))
+
+               saldo, extrato = sacar(
+                   
+                     saldo = saldo,
+                     valor = valor,
+                     extrato = extrato,
+                     limite= limite,
+                     numero_saque = numero_saque,
+                     lomite_saque = Limite_saques
+          
+                   )
+               
+     elif opcao == "c" :
+          print("\n======== Extrato ========")
+          exibir_extrato(saldo,extrato=extrato)
+     
+     elif opcao == "nu" :
+
+          criar_usuarios(usuarios)
+          
+     elif opcao == "nc" :
+
+          numero_conta =len(contas) + 1
+          conta = criar_conta(Angencia, numero_conta, usuarios)
+
+          if conta :
+                contas.append(conta)
+     
+     elif opcao == "lc" :
+           
+           listar_contas(contas)
+          
+     """ elif opcao == "q" :
+        break
+     else:
+          print("Operação inválida, por favor selecione novamente a operação desejada")
+          """
+
+main()
